@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <!--查询所有工资项-->
+<mapper namespace="com.salary.dao.WageItemDao">
+    <select id="selectAllWageItem" resultType="wageItem">
+        select * from wage_item
+    </select>
+        <!--根据id查询所有工资项-->
+    <select id="selectAllWageItemByWageItemId" parameterType="integer" resultType="wageItem">
+        select late_fine,early_fine,business_trip_sal,ful_checks_sal,food_sal,traffic_sal,usual_sal,week_sal,
+        holiday_sal from wage_item where wage_item_id=#{wageItemId}
+    </select>
+        <!--更新工资项-->
+    <update id="updateWageItem" >
+        update wage_item set late_fine=#{lateFine},early_fine=#{earlyFine},business_trip_sal=#{businessTripSal},
+        ful_checks_sal=#{fulChecksSal},food_sal=#{foodSal},traffic_sal=#{trafficSal},usual_sal=#{usualSal},
+        week_sal=#{weekSal}, holiday_sal=#{ holidaySal} where wage_item_id=1
+
+    </update>
+</mapper>

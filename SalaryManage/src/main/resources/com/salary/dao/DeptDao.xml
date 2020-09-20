@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salary.dao.DeptDao">
+
+    <select id="selectAll" resultType="dept">
+        select * from dept
+    </select>
+
+    <select id="selectDeptBydeptName" resultType="dept">
+        select * from dept where dept_name = #{deptName}
+    </select>
+
+    <insert id="insertDept" parameterType="dept">
+        insert into dept(dept_name,dept_desc) values (#{deptName},#{deptDesc})
+    </insert>
+
+    <update id="updateDept" parameterType="dept">
+        update dept set dept_name = #{deptName},dept_desc = #{deptDesc} where dept_id = #{deptId}
+    </update>
+
+    <delete id="deleteDept" parameterType="int">
+        delete from dept where dept_id = #{deptId}
+    </delete>
+</mapper>

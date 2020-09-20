@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salary.dao.TitleDao">
+
+    <select id="selectAll" resultType="title">
+        select * from title
+    </select>
+
+    <select id="selectTitleBytitleName" resultType="title">
+        select * from title where title_name = #{titleName}
+    </select>
+
+    <insert id="insertTitle" parameterType="title">
+        insert into title(title_name,title_sal) values (#{titleName},#{titleSal})
+    </insert>
+
+    <update id="updateTitle" parameterType="title">
+        update title set title_name = #{titleName},title_sal = #{titleSal} where title_id = #{titleId}
+    </update>
+
+    <delete id="deleteTitle" parameterType="int">
+        delete from title where title_id = #{titleId}
+    </delete>
+</mapper>

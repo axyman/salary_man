@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace是接口的全类名-->
+<mapper namespace="com.salary.dao.EmpDao">
+
+    <resultMap id="emp_all_map" type="com.salary.entities.Emp">
+        <id property="empId" column="emp_id"/>
+        <result property="empName" column="emp_name"/>
+        <result property="empSex" column="emp_sex"/>
+        <result property="empEdu" column="emp_edu"/>
+        <result property="empTel" column="emp_tel"/>
+        <result property="titleId" column="title_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="empSosTel" column="emp_sos_tel"/>
+        <result property="empSosName" column="emp_sos_name"/>
+        <result property="baseMoney" column="base_money"/>
+
+        <!--这里可以使用分步查询-->
+        <!--封装职称-->
+        <association property="title" javaType="com.salary.entities.Title">
+            <id property="titleId" column="title_id"/>
+            <result property="titleName" column="title_name"/>
+            <result property="titleSal" column="title_sal"/>
+        </association>
+        <!--封装岗位-->
+        <association property="post" javaType="com.salary.entities.Post">
+            <id property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="postDesc" column="post_desc"/>
+            <result property="postSal" column="post_sal"/>
+        </association>
+        <!--封装部门-->
+        <association property="dept" javaType="com.salary.entities.Dept">
+            <id property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+    <!--条件查询-->
+    <select id="selectAll" resultMap="emp_all_map">
+        SELECT * FROM emp e
+		LEFT JOIN dept d ON e.dept_id = d.dept_id
+		LEFT JOIN post p ON e.post_id = p.post_id
+		LEFT JOIN title t ON e.title_id = t.title_id
+
+		<where>
+		    <if test=" empId != null ">
+                e.emp_id = #{empId}
+            </if>
+            <if test="empName != null and empName!= '' ">
+                and e.emp_name = #{empName}
+            </if>
+            <if test="deptId != null">
+                and e.dept_id = #{deptId}
+            </if>
+        </where>
+    </select>
+
+    <!--<insert id="public void insertEmp(Emp emp);-->
+
+    <insert id="insertEmp">
+        insert into emp(emp_name,emp_sex,emp_edu,emp_tel,title_id,post_id,dept_id,emp_sos_tel,emp_sos_name,base_money)
+        values(#{empName},
+                #{empSex},
+                #{empEdu},
+                #{empTel},
+                #{titleId},
+                #{postId},
+                #{deptId},
+                #{empSosTel},
+                #{empSosName},
+                #{baseMoney})
+    </insert>
+
+    <!--public Emp selectOne(Integer empId)-->
+    <select id="selectOne" resultType="com.salary.entities.Emp">
+        select * from emp where emp_id = #{empId}
+    </select>
+
+    <!--public void deleteEmp(Integer empId);-->
+    <delete id="deleteEmp">
+        DELETE FROM emp WHERE EMP_id = #{empId}
+    </delete>
+
+    <!--public void deleteEmpByEmpIds(List<Integer> empIds);-->
+    <delete id="deleteEmpOfBatch" parameterType="Integer">
+        DELETE FROM emp WHERE emp_id in
+        <foreach  collection="empIds" item="empIdItem" open="(" separator="," close=")">
+            #{empIdItem}
+        </foreach>
+    </delete>
+
+    <!--public void updateEmp(Emp emp);-->
+    <update id="updateEmp">
+        update emp
+            set emp_name = #{empName},
+                emp_sex=#{empSex},
+                emp_edu=#{empEdu},
+                emp_tel=#{empTel},
+                title_id=#{titleId},
+                post_id=#{postId},
+                dept_id=#{deptId},
+                emp_sos_tel=#{empSosTel},
+                emp_sos_name=#{empSosName},
+                base_money=#{baseMoney}
+            where emp_id=#{empId}
+    </update>
+
+    <!--Integer countEmp(Integer deptId);-->
+    <select id="countEmp" resultType="map">
+         select dept_name,count(*) as nums from emp e,dept d where e.dept_id = d.dept_id GROUP BY e.dept_id ;
+    </select>
+
+
+
+</mapper>

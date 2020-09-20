@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salary.dao.PostDao">
+
+    <select id="selectAll" resultType="post">
+        select * from post
+    </select>
+
+    <select id="selectPostBypostName" resultType="post">
+        select * from post where post_name = #{postName}
+    </select>
+
+    <insert id="insertPost" parameterType="post">
+        insert into post(post_name,post_desc,post_sal) values (#{postName},#{postDesc},#{postSal})
+    </insert>
+
+    <update id="updatePost" parameterType="post">
+        update post set post_name = #{postName},post_desc = #{postDesc},post_sal = #{postSal} where post_id = #{postId}
+    </update>
+
+    <delete id="deletePost" parameterType="int">
+        delete from post where post_id = #{postId}
+    </delete>
+</mapper>

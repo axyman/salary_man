@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace是接口的全类名-->
+<mapper namespace="com.salary.dao.SalaryDao">
+
+    <resultMap id="salary_with_deptMap" type="com.salary.entities.Salary">
+        <id property="salId" column="sal_id"></id>
+        <result property="mon" column="mon"/>
+        <result property="empId" column="emp_id"/>
+        <result property="empName" column="emp_name"/>
+        <result property="realSal" column="real_sal"/>
+        <result property="shouldSal" column="should_sal"/>
+        <result property="baseMoney" column="base_money"/>
+        <result property="businessTripSal" column="business_trip_sal"/>
+        <result property="fullChecksSal" column="full_checks_sal"/>
+        <result property="postSal" column="post_sal"/>
+        <result property="foodSal" column="food_sal"/>
+        <result property="trafficSal" column="traffic_sal"/>
+        <result property="overtimeSal" column="overtime_sal"/>
+        <result property="titleSal" column="title_sal"/>
+        <result property="workSal" column="work_sal"/>
+        <result property="state" column="state"/>
+        <association property="dept" javaType="com.salary.entities.Dept">
+            <id property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+    
+    <select id="selectAll" resultMap="salary_with_deptMap">
+        select * from salary
+            left join dept
+                on salary.dept_id = dept.dept_id
+            <where>
+                state = #{state}
+                <if test="empId != null">
+                    and emp_id = #{empId}
+                </if>
+                <if test="deptId != null">
+                    and salary.dept_id = #{deptId}
+                </if>
+                <if test="mon != null and mon != '' ">
+                    and mon = #{mon}
+                </if>
+            </where>
+    </select>
+
+    <!--public void updateSal(Integer salId);-->
+    <update id="updateSal">
+        update salary set state = 1 where sal_id = #{salId}
+    </update>
+
+    <!--public void updateSalOfBatch(@Param("salIds") List<Integer> salIds);-->
+    <update id="updateSalOfBatch">
+        update salary set state = 1 where sal_id in
+            <foreach collection="salIds" item="salId" open="(" separator="," close=")">
+                #{salId}
+            </foreach>
+    </update>
+
+    <!--public void deleteSal(Integer salId);-->
+    <delete id="deleteSal">
+        delete from salary where sal_id = #{salId}
+    </delete>
+
+    <!--public void deleteOfBatch(@Param("salIds") List<Integer> salIds);-->
+    <delete id="deleteOfBatch">
+        delete from salary where sal_id in
+        <foreach collection="salIds" item="salId" open="(" separator="," close=")">
+            #{salId}
+        </foreach>
+    </delete>
+
+    <!--public List<DataInfo> selectDeptSal(String mon);-->
+    <select id="selectDeptSal" resultType="com.salary.entities.DataInfo">
+         select * from data_info where mon = #{mon}
+    </select>
+
+    <!--public List<DataInfo> selectRatio(String mon);-->
+    <select id="selectRatio" resultType="com.salary.entities.DataInfo">
+        SELECT s.mon as mon,s.dept_id as deptId,d.dept_name as deptName, SUM(s.real_sal) as allSal,
+            (select Sum(real_sal) from salary where mon Like #{mon}) as salRatio
+        FROM salary s
+	        join dept d on d.dept_id = s.dept_id
+        where s.mon like  #{mon}  GROUP BY s.dept_id
+    </select>
+
+    <!--public List<DataInfo> selectMonSal(String year);-->
+    <select id="selectMonSal" resultType="com.salary.entities.DataInfo">
+        select  mon , Sum(real_sal) as allSal from salary
+         where mon like
+         #{year} GROUP BY mon
+    </select>
+
+    <!-- public void insertData(String mon);-->
+    <insert id="insertData">
+            insert into data_info (mon,dept_id ,dept_name,avg_sal,max_sal,min_sal,sum_sal,all_sal,sal_ratio)
+            SELECT s.mon,s.dept_id,d.dept_name, AVG(s.real_sal),MAX(s.real_sal),MIN(s.real_sal) ,
+            SUM(s.real_sal),
+            (select Sum(real_sal) from salary where mon Like #{mon}) ,
+            SUM(s.real_sal) /(select Sum(real_sal) from salary where mon Like #{mon})
+            FROM salary s
+            join dept d on d.dept_id = s.dept_id
+            where s.mon = #{mon}
+            GROUP BY s.dept_id
+
+    </insert>
+
+    <!--public void clearDataInfo();-->
+    <delete id="clearDataInfo">
+        delete from data_info where mon = #{mon}
+    </delete>
+
+    <!-- public List<String> selectMMons();-->
+    <select id="selectMMons" resultType="string">
+        SELECT mon FROM `salary` GROUP BY mon
+    </select>
+
+
+
+</mapper>

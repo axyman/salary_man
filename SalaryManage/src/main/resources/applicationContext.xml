@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <!--扫描包注解-->
+    <context:component-scan base-package="com.salary">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--导入外部资源-->
+    <context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+
+    <!--配置数据源-->
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+        <property name="driverClass" value="${mysql.driver}"></property>
+        <property name="jdbcUrl" value="${mysql.url}"></property>
+        <property name="password" value="${mysql.password}"></property>
+        <property name="user" value="${mysql.user}"></property>
+    </bean>
+
+    <!--配置sqlsession-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSession">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="mapperLocations" value="classpath:com/salary/dao/*.xml"></property>
+        <property name="configLocation" value="classpath:mybatis-conf.xml"></property>
+
+
+    </bean>
+
+    <!--扫描接口的位置-->
+    <!--<mybatis:scan base-package="com.xh.dao"></mybatis:scan> 方法二-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.salary.dao"></property>
+    </bean>
+
+    <!--配置事务管理器-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--开启注解事务-->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+
+</beans>

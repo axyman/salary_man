@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.salary.dao.WorkYearsDao">
+
+    <select id="selectAll" resultType="workYears">
+        select * from work_times
+    </select>
+
+    <select id="selectWorkYearsByworkYears" resultType="workYears">
+        select * from work_times where work_years = #{workYears}
+    </select>
+
+    <insert id="insertWorkYears" parameterType="workYears">
+        insert into work_times(work_years,work_sal) values (#{workYears},#{workSal})
+    </insert>
+
+    <update id="updateWorkYears" parameterType="workYears">
+        update work_times set work_years = #{workYears},work_sal = #{workSal} where work_id = #{workId}
+    </update>
+
+    <delete id="deleteWorkYears" parameterType="int">
+        delete from work_times where work_id = #{workId}
+    </delete>
+</mapper>
